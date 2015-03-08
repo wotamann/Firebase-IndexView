@@ -29,16 +29,16 @@
         &nbsp;    
         <div class="checkbox">
             <label>
-                <input ng-model="sortup" ng-init="sortup=true" ng-change="query(term, index, sortup,view)" type="checkbox" >&nbsp;Sort Up
+                <input ng-model="sort" ng-init="sort=true" ng-change="query(term, index, sort,view)" type="checkbox" >&nbsp;Sort Up
             </label>
             <label>
-                <input ng-model="view" ng-init="view=true" ng-change="query(term, index, sortup,view)" type="checkbox" >&nbsp;Display View
+                <input ng-model="view" ng-init="view=true" ng-change="query(term, index, sort,view)" type="checkbox" >&nbsp;Display View
             </label>
         </div>
         &nbsp;
         <div class="form-group">               
             <select class="form-control" ng-init="index=indexDeclaration[0]" ng-model="index" ng-options="idx.indexName for idx in selection"></select>
-            <input id="search" class="form-control" ng-model="term" ng-change="query(term, index, sortup, view)" ng-model-options="{ debounce: {'default': 333} }" type="text" placeholder="Search">
+            <input id="search" class="form-control" ng-model="term" ng-change="query(term, index, sort, view)" ng-model-options="{ debounce: {'default': 333} }" type="text" placeholder="Search">
         </div>
         &nbsp; 
         <button class="btn" ng-class="{'btn-danger': !isIndexing(), 'btn-success': isIndexing()}" ng-click="toggleIDX()">Indexing</button>        
@@ -50,13 +50,14 @@
         <button class="btn btn-info" ng-click="generatePersons()">Meal+</button>
 
         <p style="font-size:small;color:#999;padding:8px">
-            Automatic Indexing of (nested) Documents in Firebase.   
-            Install 'Vulcan', open Chrome Dev-Tools and watch Firebase generating Indexes and  Views. Start 'Indexing' and add with 'Meal+' some Meals to Firebase.  
+            Install 'Vulcan', open Chrome Dev-Tools to watch generating and updating Indexes and Views. 
+            IndexView uses Firebase's 'Dinosaur' and the own 'DinoMeals' DB. For first use 'Rebuild' to generate an Index from external 'Dinosaur' DB.   
+            Start 'Indexing' and click 'Meal+' to add some Meals to Firebase.  
             Any Change in your Data automatically updates your Index and View. You can also 'Delete' or 'Rebuild' your Index if necessary. Choose any Index from the Selectbox and search wildcard '*'. 
             Check 'Display View' to show views stored with your index otherwise you get the origin stored JSON-document.                 
-            Your Query results in an array of JSON-objects holding the 'key' of your indexed document and a 'value' which holds the index view or the JSON-document itself.
-            <br>
-            IMPORTANT NOTE: Only edit Data in your Data-Reference, this will automatically update your Index. All Data in Index-Reference MUST NOT be edited, it will be overwritten.
+            Your Query results in an array of objects holding the 'key' of your indexed document and a 'value' which holds the index view or the document itself.
+            <br><br>
+            IMPORTANT NOTE: Only edit Data in your Data-Reference, IndexView will automatically update your Index and View. Data in Index-Reference MUST NOT be edited, they will be overwritten.
         </p>
     
     </form>
