@@ -259,11 +259,11 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
 
     var indexDeclaration = [
         {
-            indexName: 'dino_height',
-            mapIndex: 'height'
+            indexName: 'dino_order',
+            mapIndex: 'order'
         },
         {
-            indexName: 'length',
+            indexName: 'order',
         },
         {
             indexName: 'vanished',

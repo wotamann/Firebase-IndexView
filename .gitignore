@@ -76,3 +76,6 @@ $RECYCLE.BIN/
 
 # bash files
 *.sh
+
+#no git directory
+no_git

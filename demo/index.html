@@ -1,0 +1,72 @@
+<!doctype html >
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- Angular + Bootstrap -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.1/angular.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.2.2/firebase.js"></script>
+
+    <!-- FirebaseIndexView Module -->
+    <script src="/firebaseindex.js"></script>
+
+    <!-- Angular App -->
+    <script src="/app.js"></script>
+
+</head>
+
+<body ng-app="IndexView_Demo" ng-controller="appCtrl">
+
+    <form class="form-inline">
+
+        &nbsp;
+        <div class="checkbox">
+            <label>
+                <input ng-model="sort" ng-init="sort=true" ng-change="query(term, index, sort,view)" type="checkbox">&nbsp;Sort Up
+            </label>
+            <label>
+                <input ng-model="view" ng-init="view=true" ng-change="query(term, index, sort,view)" type="checkbox">&nbsp;Display View
+            </label>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <select class="form-control" ng-init="index=indexDeclaration[0]" ng-model="index" ng-options="idx.indexName for idx in selection"></select>
+            <input id="search" class="form-control" ng-model="term" ng-change="query(term, index, sort, view)" ng-model-options="{ debounce: {'default': 333} }" type="text" placeholder="Search">
+        </div>
+        &nbsp;
+        <button class="btn" ng-class="{'btn-danger': !isIndexing(), 'btn-success': isIndexing()}" ng-click="toggleIDX()">Indexing</button>
+        &nbsp;
+
+        <button class="btn btn-success" ng-click="rebuildIDX()">Rebuild</button>
+        <button class="btn btn-danger" ng-click="deleteIDX()">Delete</button>
+        &nbsp;
+        <button class="btn btn-info" ng-click="generatePersons()">Meal+</button>
+
+        <p style="font-size:small;color:#999;padding:8px">
+            Install 'Vulcan', open Chrome Dev-Tools to watch generating and updating Indexes and Views. IndexView uses Firebase's 'Dinosaur' and the own 'DinoMeals' DB. For first use 'Rebuild' to generate an Index from external 'Dinosaur' DB. Start 'Indexing' and click 'Meal+' to add some Meals to Firebase. Any Change in your Data automatically updates your Index and View. You can also 'Delete' or 'Rebuild' your Index if necessary. Choose any Index from the Selectbox and search wildcard '*'. Check 'Display View' to show views stored with your index otherwise you get the origin stored JSON-document. Your Query results in an array of objects holding the 'key' of your indexed document and a 'value' which holds the index view or the document itself.
+            <br>
+            <br> IMPORTANT NOTE: Only edit Data in your Data-Reference, IndexView will automatically update your Index and View. Data in Index-Reference MUST NOT be edited, they will be overwritten.
+        </p>
+
+    </form>
+
+    <ul class="list-group">
+
+        <li class="list-group-item list-group-item-info" ng-repeat="p in persons">
+            <button type="button" class="close" data-dismiss="alert" ng-click="removeItem($index, p)"><span>&times;</span>
+            </button>
+            {{p}}
+        </li>
+
+    </ul>
+
+</body>
+
+</html>
