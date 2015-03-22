@@ -3,33 +3,58 @@
 
 ### Why **Firebase IndexView**?
 
-Working with [Firebase](https://www.firebase.com/) or other Databases sorting and searching records is our main topic, but if you want to store nested documents in JSON notation in Firebase, sometimes it is not easy to search for values in this nested documents. I know there are a lot of discussions about 'flattening structures' out there, but if you have an index, it is easy and fast to pull out a document from Firebase.
+Working with [Firebase](https://www.firebase.com/) like other Databases sorting and searching records is our main topic. But if have nested documents in JSON Notation it is not so easy to search for values in properties of a nested document. e.g. how to search for all drinks, meats and vegetarians 
+
+	dinomeals: { 
+	
+		key1: { 
+			meals: { 
+				drink: "Water, Milk" , 
+				meat: "Beef, Lamb",
+				vegetarian: "Grain, straw"  
+			}		
+		},
+		
+		key2: { 
+			meals: { 
+				drink: "Beer" , 
+				meat: "Chicken",
+				vegetarian: "Fruits, Straw"  
+			}		
+		},
+		...
+	}
+	
+
+I know there are a lot of discussions about 'flattening structures' out there, but if you have an fitting index, it is easy and fast to pull out `dinomeals` containing `Beer `.
 
 Despite [structuring](https://www.firebase.com/docs/web/guide/structuring-data.html) and [denormalizing](https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html) your data is the recommended way. Sometimes you need to make a deeper look-up in a stored document(JSON) in Firebase, because you have - coming up with some given data - to keep this structure. Flattening structure means also to maintain your 'denormalized' data at multiple positions in your database synchronized. If you don't want to integrate an external solution like ElasticSearch and you don't want to work with a mixed server- & client-side solution, then **IndexView** brings up an - easy to go - AngularJS solution. **IndexView** is a pure client-side solution and extends only the backend capabilities of Firebase. 
 
-Firebase **IndexView** will help you to index any documents (JSON notation) stored in Firebase and will search for each indexed - even nested - property. Define index-names and some view-mapping functions and **IndexView** will automatically hold your indexes and views uptodate. See here data in `dinomeal` node, each data-document with an unique key. 
+**IndexView** will help you to index any documents (JSON notation) stored in Firebase and will search for each indexed - even nested - property. It is easy to go, define index-names and some view-mapping functions and **IndexView** will automatically hold your indexes and views uptodate. See here sample data in `dinomeal` node, each data-document with an unique key. 
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_data.png)
 
-In difference to [Firebase's data index](https://www.firebase.com/docs/security/guide/indexing-data.html) **IndexView** can index and sort also a nested 'child of a child of a child...' . In this case you create an index of all items in each property of meals e.g. Fruit Juice , Milk, Murauer, Mammoth,...  **IndexView** uses a mapView function to transform your data into index-keys e.g. to lowercase: if you have mixed upper- and lowercase entrys from a foreign readonly database, then - on the fly - all indexes could be transformed to lowercase. You know Firebase queries are case sensitiv. Or you can transform a date into a value that represents the number of milliseconds for doing some calculations. Any mapping function is allowed, if the result is a valid index ( stored as [Firebase priority().](https://www.firebase.com/docs/web/api/firebase/setpriority.html)).
+In difference to [Firebase's data index](https://www.firebase.com/docs/security/guide/indexing-data.html) **IndexView** can index and sort also a nested 'child of a child of a child...' . In this case you create an index of all items in each property of meals e.g. `Cola, Budweiser, Fanta, Beef, Duck, straw`.  **IndexView** uses a mapView function to transform your data into indexes e.g. to lowercase: if you have mixed upper- and lowercase entrys from a foreign readonly database, then - on the fly - all indexes could be transformed to lowercase. You know Firebase queries are case sensitiv. Or you can transform a date into a value that represents the number of milliseconds for doing some calculations. Any index mapping function is allowed, if the result is a valid index ( stored as [Firebase priority().](https://www.firebase.com/docs/web/api/firebase/setpriority.html)).
 
-Further IndexView provides the option to generate **mapped views** of your origin Firebase data-documents, which are stored as values. A view can return a simple 'true' but also extract a summary or a calculation over values in your data-document. Next you see the index node `IDX-dinomeal` where you can find your indexes created from origin data in `dinomeal`. The priority is your index sorted and queryable. The value is your concatenated view but could also be a simple `true`.  
+Further IndexView provides the option to generate **mapped views** of your origin Firebase data-documents, which are stored as values. A view can return a simple 'true' but also extract a summary or make a calculation over values in your data-document. Next you see the index node `IDX-dinomeal` where you can find your indexes created from origin data in `dinomeal`. The priority is your index sorted and queryable. The value is here a - senseless - concatenated view but could also be a simple `true`.  
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_index.png)
 
-IndexView - if activated - generates automatically indexes and views of your referenced Firebase DB. It watches your data and **updates your index and views dynamically**, as data is added,changing or removed. But edit and manipulate data only in your data-reference `dinomeal` and **never** in your index-reference `IDX-dinomeal`. Data in index-reference will be maintained by IndexView.
-
+**IndexView** is easy to use - if once activated - it maintain automatically indexes and views of your referenced Firebase DB. It watches your data and **updates your index and views dynamically**, as data is added,changing or removed. But edit and manipulate data only in your data-reference `dinomeal` and **never** in your index-reference `IDX-dinomeal`. Data in index-reference will be maintained by IndexView.
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_index_changed.png)
 
 
 > IMPORTANT NOTE: All data in index-reference MUST NOT BE EDITED! Never manually edit data located in your index-reference, your changes will be overwritten by the next index-update automatically. Edit and manipulate data only in your data-reference.
 
+###The IndexView Object
 
-The created IndexView object exposes methods to manage indexing with a simple `IndexOn()` or `IndexOf()`. If necessary you can use method `IndexDelete()` or method `IndexRebuild()` to delete or rebuild your indexes and the corresponding views.  
+The created **IndexView Object **exposes methods to manage indexing with a simple `IndexOn()` or `IndexOf()`. If necessary you can use method `IndexDelete()` or method `IndexRebuild()` to delete or rebuild your indexes and the corresponding views.  
 
 > IMPORTANT NOTE: Is your Index damaged, corrupted or lost, then rebuild the index with `.indexRebuild()`. 
 > Warning: If you have large data sets, this procedure is expensive because it re-indexes all available data. 
+
+###AngularJS Service
 
 **IndexView** comes as an AngularJS modul which works perfectly pure clientside. It supports the Firebase backend service strategy and does not need serverside pre-requirements. 
 
@@ -39,7 +64,9 @@ The created IndexView object exposes methods to manage indexing with a simple `I
 
 This project is a simple and rapid prototyp to facilitate the opportunities of [Firebase](https://www.firebase.com/), IMHO a wonderful frontend-concept, thanks to all Firebase developer! 
 
-Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebase's **[Dinosaurs](https://dinosaur-facts.firebaseio.com/)** database.
+Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebase's **[Dinosaurs](https://dinosaur-facts.firebaseio.com/)** database to join it with Database Dinomeals.
+
+Explore this project at [https://github.com/wotamann/Firebase-IndexView](https://github.com/wotamann/Firebase-IndexView)
 
 ##Let's start
 
@@ -49,13 +76,13 @@ Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebas
 To work with **IndexView** you must first create a new Firebase [reference](https://www.firebase.com/docs/web/guide/understanding-data.html) to your data from a full Firebase URL.
 
 	// DINOMEAL must be located at your own Account
-	var reference= 
+	var referenceDinomeal= 
 		new Firebase("https:/MyFirebaseAccount.firebaseio.com/dinomeal");   
 
 -
 	
 	// Firebase's readonly DINOSAUR DB
-	var reference= 
+	var referenceDinosaurs= 
 		new Firebase("https://dinosaur-facts.firebaseio.com/dinosaurs");
 
 -----
@@ -65,13 +92,13 @@ To work with **IndexView** you must first create a new Firebase [reference](http
 Next create an index-reference where you want to store your index. This reference **must not be a child** of your data-reference. 
 
 	// IDX-DINOMEAL must be located at your own Account
-	var referenceIndex = 
+	var referenceIndexDinomeal = 
 		new Firebase("https://MyFirebaseAccount.firebaseio.com/IDX-dinomeal");     
 
 But it's possible to reference your data `dinosaurs` and index `IDX-dinosaurs` to different Firebase accounts.
 
-	// IDX-DINOSAUR must be writeable and located at your own Account
-	var referenceIndex = 	
+	// IDX-DINOSAUR must be writeable and must be located at your own Account
+	var referenceIndexDinosaurs = 	
 		new Firebase("https://MyFirebaseAccount.firebaseio.com/IDX-dinosaurs");       
 
 ----
@@ -83,94 +110,59 @@ This is the main point to control your indexes. **IndexDeclaration** is an array
 
 This is an example of one item in indexDeclaration array, which creates the Index 'theropoda' from order in 'Dinosaur' and storing a concatenated view like: 'linhenykus belongs to theropoda'
 
-    var IndexDeclaration =
-	[...
-	    
+    var IndexDeclarationDinosaurs =
+	[
 		{   
-			indexName: 'dino_order',                        
-	        
-			mapIndex: function(doc){ 
-				return doc.order ? doc.order.toLowerCase() : null },
-	        
-			mapView:  function(doc){ 
-				return (doc.order && doc._key) ?  doc._key + ' belongs to ' + doc.order : null }
-	    },                       
-    
-	...]
+            viewName: 'order',
+                        
+            mapView: function(emit, doc){ 
+                
+				var idx= doc.order ? doc.order.toLowerCase() : null,
+                    value= (doc.order && doc._key) ?  doc._key + ' belongs to ' + doc.order : null 
 
-Every index-item in IndexDeclaration array is an object with 3 properties: 
+            	emit(idx,value)  // generates index/view
+            },
+        }                          
+    	...
 
-1. First property **indexName** becomes an child of your [Firebase Index Reference](https://www.firebase.com/docs/web/guide/understanding-data.html#section-creating-references) and locates the position of your index in Firebase. **indexName** must be a string - in best case it could be one property of your document like 'doc.order'. The value of **indexName** could be nested like 'meals/vegetarian'. In this case the index will be located at the path 'dinomela/[uniquekey]/meals/vegetarian'. This allows building an individual index tree in Firebase.
+	]
 
-		{ indexName: 'order', ... } 
+Every index-definition in IndexDeclaration array is an object with 2 properties: 
+
+1. First property **viewName** becomes an child of your [Firebase Index Reference](https://www.firebase.com/docs/web/guide/understanding-data.html#section-creating-references) and locates the position of your index in Firebase. **viewName** must be a string - in best case it could be one property of your document like 'doc.order'. The value of **viewName** could be nested like 'meals/drink'. In this case the index will be located at the path 'IDX-dinomeal/[uniquekey]/meals/drink'. This allows building an individual index tree in Firebase.
+
+		{ viewName: 'order', ... } 
 		
 		// or 
 		
-		{ indexName: 'meals/vegetarian', ... } 
+		{ viewName: 'meals/food', ... } 
 
 
-2. Control index generation with **mapIndex**, which expects a function or an array with a function as first item for mapping your data-document into an index-key (= Firebase priority). In this example the property `order` from your data-document becomes the lowerCase IndexKey. This key is sorted and can be searched. Setting the index-kex (= Firebase priority) to null removes any existing priority and will be ordered first. See [Firebase setPriority().](https://www.firebase.com/docs/web/api/firebase/setpriority.html) 
-   
-		
-		{ 
-			indexName: 'order', 
-		
-			mapIndex: function(doc){ 
-				return doc.order ? doc.order.toLowerCase() : null }, 
+2. Control index generation with **mapView**, which expects a function or an array with a function as first item for mapping your data-document into an index-key (= Firebase priority). In this example the property `order` from your data-document becomes the lowerCase IndexKey. This key is sorted and can be searched. Setting the index-kex (= Firebase priority) to `null` removes any existing priority and will be ordered first. See [Firebase setPriority().](https://www.firebase.com/docs/web/api/firebase/setpriority.html). Setting the index-kex (= Firebase priority) to `undefined` removes this record. 
 	
-		} 
-	      
-		// or define mapIndex function with 2 parameters 
-	
-		function makeIndex(doc, case){ 
-			return doc.order ? (case ? doc.order.toUpperCase():doc.order.toLowerCase() ) : null };
-		 
-		{ 
-			indexName: 'upperOrder', 
-	
-			// first item is the mapping function, 
-			// further items(2-n) are parameters for mapping function
-			mapIndex: [makeIndex, true],   
+	**mapView** expects a function or an array with a function as first item for mapping the document into a view, wich is stored as value. The value to be written to your Firebase (can be an object, array, string, number, boolean, or null). If mapView function emits a value  `null` or `undefined` the entry will be removed from Firebase. If you get an query result the key of the current document is available by property `_key`. The index of the current document is available by property `_priority`. The function `emit` takes 2 parameters `emit(index, value)`. If you call emit it generates an record in index-database with priority `index` and value `value`.
 		
-		} 
-         
-
-3. The third index property **mapView** expects - like mapIndex - a function or an array with a function as first item for mapping the document into a view, wich is stored as value. The value to be written to your Firebase (can be an object, array, string, number, boolean, or null). If mapView function returns `null` or `undefined` the entry will be removed from Firebase. The key of the current document is available by property `_key`
-		
-		function makeIndex(doc, case){ 
-			return doc.order ? (case ? doc.order.toUpperCase():doc.order.toLowerCase() ) : null }
-	
-		[...
-			{ 
-				indexName: 'upperOrder', 
-			
-				// first item function, items(2-n) are parameters for mapping function
-				mapIndex: [makeIndex, true], 
-		
-				// set value as key of document, which is available by property 'doc._key'
-				mapView:  function(doc){ 
-					return (doc._key) ?  doc._key : null }
-	
-			} 
-		...]
-
-
-> IMPORTANT NOTE: IF your first mapView parameter `doc` becomes - in case of being removed from Firebase - `undefined `, then mapView must take precautions to return a `null` or `undefined` value. Only in this case is guaranteed that the Index entry also will be removed.
-
-	FirebaseIndexView.defaultMapView=true;
-
-	[..
-		{ 				
-			...
-			mapView: undefined,  // set view to 'true'
-			...
+		function makeOrder(emit, doc, param1){ 	                
+			var idx= doc.order ? doc.order.toLowerCase() : null,
+	            value= (doc.order && doc._key) ?  doc._key + ' belongs to ' + doc.order : null 
+	    	emit(idx,value)  // generates index/view
 		}
-	...]
-
-> IMPORTANT NOTE: Is mapView `undefined` or the mapView property not declared, then the value of variable `defaultMapView` will be the value of your index. `defaultMapView` is set to `true` by default and can hold to any valid Firebase value like a string, object or number. 
-
-		FirebaseIndexView.defaultMapView=true;  // set defaultMapView here with a valid Firebase value 
-
+	
+		var IndexDeclarationDinosaurs =
+		[
+		// pass function to mapView
+			{   
+	            viewName: 'order',
+	            mapView: makeOrder
+			},
+		
+		/* or alternativ pass some parameters to your function
+			{   
+	            viewName: 'order1',
+	            mapView: [makeOrder,"param1"]
+			}        
+		*/	
+		]
 
 ----
 
@@ -178,40 +170,51 @@ Every index-item in IndexDeclaration array is an object with 3 properties:
 
 #####a) Simple Index 	
 
-	var IndexDeclaration =
-	[...
-	    
+'mapView' can be a function with 2 parameters `emit, doc`. 'emit' is a function, which does the work and generates an index. emit must be called with `index` and `value` to generate an index.
+
+> mapView:function (emit, doc) { ... emit(index,value) ... }	
+
+	var IndexDeclarationDinosaurs =
+	[	    
 		{   
-			indexName: 'dino_order',                        
-	        
-			mapIndex: function(doc){ return doc.order || null },
-	        
-			mapView:  function(doc){ return doc.order ? true : null }
-	    },                       
-    
-	...]
+            viewName: 'order',
+                        
+            mapView: function(emit, doc){ 
+                
+				var idx= doc.order ? doc.order : null;
+            	emit(idx,true)  // generates index / view
+            },
+        }                            
+	]
 
 
-#####b) Minimalistic Index 
+Is 'mapView' an array then IndexView interprets the first item as function and all other items (2-n) in the array as parameters. The first parameter will always be the emit function, the second parameter is the document your are working on. 
 
-Is **mapIndex** `undefined` or the property **mapIndex** undeclared, then IndexView tries 
-to create the index `doc[indexName]`. If property 'order' in your 
-data-document exists, then an index with the value from `document.order` will generated. 
+> mapView:[function(emit, doc, param1, param2) {...}, param1, param2, ...]	
 
-Is **mapView** `undefined` or the **mapView** property not declared, then the value of variable `defaultMapView` will be the value of your index. `defaultMapView` is set to `true` by default and can hold to any valid Firebase value like a string, object or number. 
+		function makeOrder(emit, doc, param1){ 	                
+			var idx= doc.order ? doc.order.toLowerCase() : null,
+	            value= (doc.order && doc._key) ?  doc._key + ' belongs to ' + doc.order : null 
+	    	emit(idx,value)  // generates index/view
+		}
+	
+		var IndexDeclarationDinosaurs =
+		[
+			{   
+	            viewName: 'order1',
+	            mapView: [makeOrder,"param1"]
+			}        
+		]
 
-If the value of **mapView** is a string then IndexView tries to interpret this string as property of your data-document like 'doc[string]', e.g. `mapview:'order'` generates a view with value of 'doc.order'
+If 'mapView' is undefined, then IndexView try `mapView=function(emit,doc) { emit(doc[viewName],true)}`
 
-Is 'mapView' an array then IndexView interprets the first item as function and all other items (2-n) in the array as parameters. The first parameter will always be the document your are working on. 
-> mapView:[Function(doc, Param1, Param2){...}, Param1, Param2, ...]	
-
-	var IndexDeclaration = 
-	[...
+	var IndexDeclarationDinosaurs = 
+	[
 		{
-			// no mapIndex and no mapView declared, but indexName must match a property of document            
-	    	indexName: 'order'                  
+			// no mapView declared, but viewName matches a property of document            
+	    	viewName: 'order'                  
 		},
-	...]
+	]
 
 and this will created this index 
 
@@ -222,17 +225,16 @@ and this will created this index
 
 Conditional Index declaration for 'Dinosaur' database, creates an index only if condition **doc.order==='ornithischia'** is true:
 
-	[ ...
-		{   
-            indexName: 'dino_only_flying',
-
-            mapIndex: function(doc) { return doc._key; },
-
-            mapView: function(doc) { 
-				return (doc.order==='ornithischia') ? true : undefined} 
-				// only ornithischia is flying  else generate with 'undefined' no view and no index
+	[ 
+		{
+            viewName: 'dino_only_Flying',
+            mapView: function (emit, doc) {
+                if ((doc.order === 'ornithischia') === true) {
+                    emit(doc._key, true);
+                }
+            }
         },
-	... ];
+	];
 
 Firebase structure:
 
@@ -402,7 +404,7 @@ Now you can try to push a `meal` to your reference of `dinomeal`
 
 	reference.push(meal); 
 
-and every change (add, update, remove) in your Firebase reference will automatically update your index in `IDX-dinomeal`. Watch out this things in **Vulcan** 
+and every change (add, update, remove) in your data-reference will automatically update your index in `IDX-dinomeal`. Watch out things happen in **Vulcan** 
 
   
 ---

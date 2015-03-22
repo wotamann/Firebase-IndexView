@@ -107,7 +107,7 @@
                     queryResultArray = [],  // holds the query result                    
                     queryResultUniqe = {},  // hash object for get unique keys in query array
 
-                    idxName,
+                    viewName,
                     removeFlag,
                     mapView,
                     mapViewParams,
@@ -159,7 +159,7 @@
                     
                     var start = snapshot.key() + indexCounterGetKeyAppendix(),
                         end = snapshot.key() + '\uFFFF',
-                        removeQuery = referenceIndex.child(idxName).orderByKey().startAt(start).endAt(end);
+                        removeQuery = referenceIndex.child(viewName).orderByKey().startAt(start).endAt(end);
                     
                     removeQuery.once('value', function (dataSnapshot) {
                         dataSnapshot.forEach(function (snap) {
@@ -188,8 +188,8 @@
                         value = null;
                     }
 
-                    //console.log( "snapValue EMIT: ", idxName,priority, value);                    
-                    referenceIndex.child(idxName).child(snapKeyWithHeader()).setWithPriority(value, priority);
+                    //console.log( "snapValue EMIT: ", viewName,priority, value);                    
+                    referenceIndex.child(viewName).child(snapKeyWithHeader()).setWithPriority(value, priority);
 
                 }
                 
@@ -233,10 +233,10 @@
                         ix = indexDeclaration[i];
 
                         // viewName
-                        idxName = ix.viewName;
-                        // is idxName nit a valid path skip and take next from indexDeclaration Array 
-                        if (isPath(idxName) === false) {
-                            console.warn("Skip Index Name: '" + idxName + "', because 'viewName' in indexDeclaration array must be non-empty string and can't contain '.', '#', '$', '\\', '[', or ']'");
+                        viewName = ix.viewName;
+                        // is viewName nit a valid path skip and take next from indexDeclaration Array 
+                        if (isPath(viewName) === false) {
+                            console.warn("Skip Index Name: '" + viewName + "', because 'viewName' in indexDeclaration array must be non-empty string and can't contain '.', '#', '$', '\\', '[', or ']'");
                             continue;
                         }
 
@@ -245,6 +245,12 @@
                         mapViewParams = (typeof mapView === 'object') ? Object.create(mapView) : [];
                         // if mapView isArray try get FN from first item in Array
                         mapView = Array.isArray(mapView) ? mapView[0] : mapView;
+                        
+                        // if mapView is undefined then try minimalistic option and creeate index from doc[viewName] with value true
+                        if (typeof mapView === 'undefined') {
+                            mapView=function(e,d) { e(d[viewName],true)}
+                        }  
+                        
                         // at this point mapView must be a 'function' returning a valid Firebase value (string, object, number) 
                         if (typeof mapView !== 'function') {
                             console.warn("'mapView' must be a valid function which emits an valid Firebase priority and value (string, object, number) - mapView:", mapView);

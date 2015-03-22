@@ -17,14 +17,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     //---  DINOSAUR  --------------------------------------------------------------------------------------------------------
     
     var indexDeclarationDinosaur = [
-        {
-            viewName: 'order',
-            mapView: function (emit, doc) {
-                var key = doc.order ? doc.order.toLowerCase() : '',
-                    val = (doc.order && doc.weight) ?  doc.order + ' has weight of ' + doc.weight : "no Dinosaur";
-                emit(key, val);
-            }
-        },
+        
         {
             viewName: 'volume',
             mapView: function (emit, doc) {
@@ -48,7 +41,22 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
                     emit(doc._key, true);
                 }
             }
-        }
+        },
+        
+        {   
+            viewName: 'weight'
+        },
+        
+        {   
+            viewName: 'order',                        
+            mapView: function(emit, doc){ 
+                var k= doc.order ? doc.order.toLowerCase() : null,
+                    v= (doc.order && doc._key) ?  doc._key + ' belongs to ' + doc.order : null 
+
+            emit(k,v)
+
+            },
+        }       
   
     ];
     
@@ -199,7 +207,8 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         
         var reduceFN;        
         if (reduce===true)  {
-            reduceFN=CountRecords;
+            //reduceFN=CountRecords;
+            reduceFN=countMealsFN;
         }
         
         IndexViewDinoMeals.queryFromTo(index, termFrom, termTo, sort, unique, output,undefined,reduceFN)
@@ -236,7 +245,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         IndexViewDino.indexDelete();
     };
 
-    $scope.generateMeals = function () {
+    $scope.addMeals = function () {
 
         var i,
             l = 1,
@@ -258,45 +267,46 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         // generate random DinoMeals object
         
         var p = {},
-            ml = {};
+            ml = {},
+            rnd=Math.random();
 
-        var m = ["Beef", "Sausage", "Lamb", "Turkey", "Dino small", "Dino XXLarge", "Fish", "Duck",  "rotten Carcass", "Humans", "Mammoth"];
-        ml.meat = getRandom(m) + ",";
+        var m = ["Beef", "Sausage", "Chicken", "Chorizo", "Pork", "Burger", "Lamb", "Turkey", "Dino small", "Dino XXL", "Fish", "Duck",  "rotten Carcass", "Humans", "Mammoth"];
+        ml.meat = getRandom(m);
         
-        var v = ["gras", "grape", "pineapple", "Tomatoes", "fruits", "bananas", "trees", "apples", "grain", "leafs", "straw", "corn"];
-        ml.vegetarian = getRandom(v) + ",";
+        var v = ["Gras", "Grape", "pineapple", "Tomatoes", "fruits", "bananas", "trees", "apples", "grain", "leafs", "straw", "corn"];
+        ml.vegetarian = getRandom(v);
         
-        var dx = ["Water", "Milk", "blood", "Beer", "seawater", "Budweiser", "Fruit Juice", "Murauer", "Gösser", "Puntigamer", "Coke", "Cola", "Fanta", "Ice Tea"];
-        ml.drink = getRandom(dx) + ",";
+        var dx = ["Water", "Wine", "Bordeaux", "Milk", "blood", "Beer", "Seawater", "Budweiser", "Sprite", "Orange Juice", "Murauer", "Gösser", "Warstein", "Coke", "Cola", "Fanta", "Ice Tea"];
+        ml.drink = getRandom(dx);
         
-        if (Math.random() > 0.4) {
-            ml.meat += getRandom(m) + ",";
+        if (rnd > 0.33) {
+            ml.meat += getRandom(m);
         }
-        if (Math.random() > 0.4) {
-            ml.vegetarian += getRandom(v) + ",";
+        if (rnd > 0.33) {
+            ml.vegetarian += getRandom(v);
         }
-        if (Math.random() > 0.4) {
-            ml.drink += getRandom(dx) + ",";
+        if (rnd > 0.33) {
+            ml.drink += getRandom(dx);
         }
         
-        if (Math.random() > 0.66) {
-            ml.meat += getRandom(m) + ",";
+        if (rnd > 0.66) {
+            ml.meat += getRandom(m);
         }
-        if (Math.random() > 0.66) {
-            ml.vegetarian +=  getRandom(v) + ",";
+        if (rnd > 0.66) {
+            ml.vegetarian +=  getRandom(v);
         }
-        if (Math.random() > 0.66) {
-            ml.drink += getRandom(dx) + ",";
+        if (rnd > 0.66) {
+            ml.drink += getRandom(dx);
         }
 
-        if (Math.random() > 0.8) {
-            ml.meat += getRandom(m) + ",";
+        if (rnd > 0.85) {
+            ml.meat += getRandom(m);
         }
-        if (Math.random() > 0.8) {
-            ml.vegetarian +=  getRandom(v) + ",";
+        if (rnd > 0.85) {
+            ml.vegetarian +=  getRandom(v);
         }
-        if (Math.random() > 0.8) {
-            ml.drink += getRandom(dx) + ",";
+        if (rnd > 0.85) {
+            ml.drink += getRandom(dx);
         }
 
         ml.meat = ml.meat.slice(0, -1);
@@ -313,13 +323,13 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     }
 
     function getRandom(template) {
-        return template[Math.floor(Math.random() * template.length)];
+        return template[Math.floor(Math.random() * template.length)] + ",";
     }
 
     function uniqueArray(source) {
         var i,
             n = {},
-            target = [],
+            target = [], 
             l = source.length;
         
         for (i = 0; i < l; i += 1) {
