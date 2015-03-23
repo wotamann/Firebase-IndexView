@@ -158,11 +158,10 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     $scope.isIndexing = IndexViewDinoMeals.isIndexing;
 
     // Some Reduce Functions - function.name becomes property in reduce-object e.g. { 'countMealsFN':10 }
-    function countMealsFN(previousValue, currentValue, index, array) {
-            
-        if (index === 1) {
-        }
-        //console.log(index, previousValue,currentValue)
+    function countMealsCalc(previousValue, currentValue){
+       
+        console.log(previousValue,currentValue)
+        
         if (currentValue.drink) {
             previousValue.drink = previousValue.drink + currentValue.drink.split(",").length;
         }
@@ -172,9 +171,18 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         if (currentValue.vegetarian) {
             previousValue.vegetarian = previousValue.vegetarian + currentValue.vegetarian.split(",").length;
         }
+        
+        return previousValue; 
+    }
+    
+    function countMealsFN(previousValue, currentValue, index, array) {
+            
+        if (index === 1) {
+            previousValue= countMealsCalc({drink: 0, meat: 0, vegetarian: 0}, previousValue)
+        }
 
-        return previousValue;
-
+        return countMealsCalc(previousValue, currentValue)
+       
     }
     // Some Reduce Functions - function.name becomes property in reduce-object e.g. { 'CountRecords':10 }
     function CountRecords(previousValue, currentValue, index, array) {
