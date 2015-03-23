@@ -161,7 +161,6 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     function countMealsFN(previousValue, currentValue, index, array) {
             
         if (index === 1) {
-            previousValue = {drink: 0, meat: 0, vegetarian: 0};
         }
         //console.log(index, previousValue,currentValue)
         if (currentValue.drink) {

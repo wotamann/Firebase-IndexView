@@ -248,7 +248,7 @@
                         
                         // if mapView is undefined then try minimalistic option and creeate index from doc[viewName] with value true
                         if (typeof mapView === 'undefined') {
-                            mapView=function(e,d) { e(d[viewName],true)}
+                            mapView=function(e,d) { e(d[viewName],true)};
                         }  
                         
                         // at this point mapView must be a 'function' returning a valid Firebase value (string, object, number) 
@@ -295,7 +295,7 @@
                     //  };
                 
                     // array.length <= 1 don't reduce send single object or empty array 
-                    if (!queryResultArray || queryResultArray.length <= 1) {
+                    if (!queryResultArray || queryResultArray.length <=1 ) {
                         return queryResultArray;
                     }
                     

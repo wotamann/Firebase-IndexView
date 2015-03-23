@@ -49,7 +49,7 @@ Further IndexView provides the option to generate **mapped views** of your origi
 
 ###The IndexView Object
 
-The created **IndexView Object **exposes methods to manage indexing with a simple `IndexOn()` or `IndexOf()`. If necessary you can use method `IndexDelete()` or method `IndexRebuild()` to delete or rebuild your indexes and the corresponding views.  
+The **IndexView Object** exposes methods to manage indexing with a simple `IndexOn()` or `IndexOf()`. If necessary you can use method `IndexDelete()` or method `IndexRebuild()` to delete or rebuild your indexes and the corresponding views.  
 
 > IMPORTANT NOTE: Is your Index damaged, corrupted or lost, then rebuild the index with `.indexRebuild()`. 
 > Warning: If you have large data sets, this procedure is expensive because it re-indexes all available data. 
@@ -58,15 +58,15 @@ The created **IndexView Object **exposes methods to manage indexing with a simpl
 
 **IndexView** comes as an AngularJS modul which works perfectly pure clientside. It supports the Firebase backend service strategy and does not need serverside pre-requirements. 
 
-**IndexView** recommends Vulcan, an Chrome application built by Firebase. Changing indexes can be visualized directly in Chrome's DevTools by using Vulcan. 
+For better understanding **IndexView** recommends Vulcan, an Chrome application built by Firebase. Changing indexes can be visualized directly in Chrome's DevTools by using Vulcan. 
 
-> TIP: Install in Chrome the Firebase Extension 'Vulcan', open Chrome Dev-Tools and observe Indexes and Views, when Data is changing.
+> TIP: Install in Chrome the Firebase Extension 'Vulcan', open Chrome Dev-Tools and see Indexes and Views changing, when Data is updated.
 
 This project is a simple and rapid prototyp to facilitate the opportunities of [Firebase](https://www.firebase.com/), IMHO a wonderful frontend-concept, thanks to all Firebase developer! 
 
 Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebase's **[Dinosaurs](https://dinosaur-facts.firebaseio.com/)** database to join it with Database Dinomeals.
 
-Explore this project at [https://github.com/wotamann/Firebase-IndexView](https://github.com/wotamann/Firebase-IndexView)
+Explore this project at **[https://github.com/wotamann/Firebase-IndexView](https://github.com/wotamann/Firebase-IndexView)**
 
 ##Let's start
 
