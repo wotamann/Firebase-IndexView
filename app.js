@@ -14,7 +14,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     'use strict';
     
     
-    //---  DINOSAUR  --------------------------------------------------------------------------------------------------------
+    //--- FirebaseIndexView DINOSAUR  --------------------------------------------------------------------------------------------------------
     
     var indexDeclarationDinosaur = [
         
@@ -66,7 +66,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
 
     IndexViewDino.indexOn();
         
-    //--- DINO MEALS --------------------------------------------------------------------------------------------------------
+    //--- FirebaseIndexView DINO MEALS --------------------------------------------------------------------------------------------------------
     
     // mapping and emiting function
     function meals(emit, doc, fullMeal) {
@@ -76,6 +76,9 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         
         for (e in meal) {  // iterate over all meals  drink, food, meat...
             var n = meal[e];
+            
+            if(!n) continue;
+            
             n = n ? n.toLowerCase() : null;
             // iterate and generate an index for each split word in every meal like water, milk, ... in drink 
             n.split(",").forEach(
@@ -151,81 +154,43 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     // Let INDEXVIEW automatic working...
     IndexViewDinoMeals.indexOn();
    
-    //--- UI --------------------------------------------------------------------------------------------------------
+    
+    //--- ANGULAR UI --------------------------------------------------------------------------------------------------------
+    
+    $scope.selOutput=["Property","Key","Value","Document","_View"];
     
     $scope.selection = uniqueArray(indexDeclarationDinomeals.concat(indexDeclarationDinosaur));
 
     $scope.isIndexing = IndexViewDinoMeals.isIndexing;
-
-    // Some Reduce Functions - function.name becomes property in reduce-object e.g. { 'countMealsFN':10 }
-    function countMealsCalc(previousValue, currentValue){
-       
-        console.log(previousValue,currentValue)
-        
-        if (currentValue.drink) {
-            previousValue.drink = previousValue.drink + currentValue.drink.split(",").length;
-        }
-        if (currentValue.meat) {
-            previousValue.meat = previousValue.meat + currentValue.meat.split(",").length;
-        }
-        if (currentValue.vegetarian) {
-            previousValue.vegetarian = previousValue.vegetarian + currentValue.vegetarian.split(",").length;
-        }
-        
-        return previousValue; 
-    }
     
-    function countMealsFN(previousValue, currentValue, index, array) {
-            
-        if (index === 1) {
-            previousValue= countMealsCalc({drink: 0, meat: 0, vegetarian: 0}, previousValue)
-        }
+    $scope.query = function (s) {
 
-        return countMealsCalc(previousValue, currentValue)
-       
-    }
-    // Some Reduce Functions - function.name becomes property in reduce-object e.g. { 'CountRecords':10 }
-    function CountRecords(previousValue, currentValue, index, array) {
-            
-        if (index === 1) {
-            previousValue = 1;
-        }
-        //console.log(index, previousValue,currentValue)
-        if (currentValue) {
-            previousValue += 1; 
-        }
-
-        return previousValue;
         
-    }
-   
-    $scope.query = function (term, index, sort, unique, output, reduce) {
-
-        if (index === undefined || !term || term.length < 1) {
+        if (s.index === undefined || !s.term || s.term.length < 1) {
             $scope.persons = [];
             return;
         }
-
-        if (term === '*') term = "";
-        var termFrom = isNaN(parseInt(term, 10)) ? term : parseInt(term, 10);
-        var termTo = isNaN(parseInt(term, 10)) ? term + '\uFFFF' : parseInt(term, 10) + 100000000;
-
-        //console.log("$scope.output", $scope.output, termFrom, termTo, sort, output);
         
-        var reduceFN;        
-        if (reduce===true)  {
-            //reduceFN=CountRecords;
-            reduceFN=countMealsFN;
+        var t=s.term;
+
+        if (t === '*') t = "";
+        s.startAt = isNaN(parseInt(t, 10)) ? t : parseInt(t, 10);
+        s.endAt = isNaN(parseInt(t, 10)) ? t + '\uFFFF' : parseInt(t, 10) + 100000000;
+
+        s.reduceFn=null;      
+        if (s.reduce===true)  {
+            s.reduceFn=CountRecords;
+            //s.reduceFn=countMealsFN;
         }
-        
-        IndexViewDinoMeals.queryFromTo(index, termFrom, termTo, sort, unique, output,undefined,reduceFN)
+       
+        IndexViewDinoMeals.queryFromTo(s)
             //IndexViewDinoMeals.queryFromTo(index, termFrom)        
             //FirebaseIndexView_kartei.queryStartAt(index, termFrom, 999,sortup, view)        
             .then(function (result) {
-                return IndexViewDino.queryFromTo(index, termFrom, termTo, sort, unique, output, result, reduceFN);
+                return IndexViewDino.queryFromTo(s, result);
             })
+       
             .then(function (result) {
-                //console.log(result);
                 $timeout(function () {
                     $scope.persons = result;
                 }); // instead of scope.$watch(...)             
@@ -261,78 +226,94 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
         for (i = 0; i < l; i += 1) {
 
             dinoMeal = generateDinoMeal();
-            dinoMeal._linked = getRandom(["lambeosaurus", "bruhathkayosaurus", "linhenykus", "stegosaurus", "pterodactyl", "triceratops"]);
+            dinoMeal._linked = getRandom(1,["lambeosaurus", "bruhathkayosaurus", "linhenykus", "stegosaurus", "pterodactyl", "triceratops"]);
             referenceDinoMeal.push(dinoMeal);
             
         }
     };
-
-    // helper functions
     
+    // Some Reduce Functions - function.name becomes property in reduce-object e.g. { 'countMealsFN':10 }
+    function countMealsCalc(previousValue, currentValue){
+       
+        // console.log(previousValue,currentValue)
+        
+        if (currentValue.drink) {
+            previousValue.drink = previousValue.drink + currentValue.drink.split(",").length;
+        }
+        if (currentValue.meat) {
+            previousValue.meat = previousValue.meat + currentValue.meat.split(",").length;
+        }
+        if (currentValue.vegetarian) {
+            previousValue.vegetarian = previousValue.vegetarian + currentValue.vegetarian.split(",").length;
+        }
+        
+        return previousValue; 
+    }   
+    function countMealsFN(previousValue, currentValue, index, array) {
+            
+        if (index === 1) {
+            previousValue= countMealsCalc({drink: 0, meat: 0, vegetarian: 0}, previousValue)
+        }
+
+        return countMealsCalc(previousValue, currentValue)
+       
+    }
+    function CountRecords(previousValue, currentValue, index, array) {
+            
+        if (index === 1) {
+            previousValue = 1;
+        }
+        //console.log(index, previousValue,currentValue)
+        if (currentValue) {
+            previousValue += 1; 
+        }
+
+        return previousValue;
+        
+    }
+   
+    // some helper functions
     function generateDinoMeal() {
         
         // generate random DinoMeals object
         
-        var p = {},
+        var f,
+            s,
+            rnd=0.66,
+            dm = {},
             ml = {},
             rnd=Math.random();
+            ml.meat="";
+            ml.vegetarian = "";
+            ml.drink = "";
 
-        var m = ["Beef", "Sausage", "Chicken", "Chorizo", "Pork", "Burger", "Lamb", "Turkey", "Dino small", "Dino XXL", "Fish", "Duck",  "rotten Carcass", "Humans", "Mammoth"];
-        ml.meat = getRandom(m);
-        
-        var v = ["Gras", "Grape", "pineapple", "Tomatoes", "fruits", "bananas", "trees", "apples", "grain", "leafs", "straw", "corn"];
-        ml.vegetarian = getRandom(v);
-        
-        var dx = ["Water", "Wine", "Bordeaux", "Milk", "blood", "Beer", "Seawater", "Budweiser", "Sprite", "Orange Juice", "Murauer", "Gösser", "Warstein", "Coke", "Cola", "Fanta", "Ice Tea"];
-        ml.drink = getRandom(dx);
-        
-        if (rnd > 0.33) {
-            ml.meat += getRandom(m);
-        }
-        if (rnd > 0.33) {
-            ml.vegetarian += getRandom(v);
-        }
-        if (rnd > 0.33) {
-            ml.drink += getRandom(dx);
-        }
-        
-        if (rnd > 0.66) {
-            ml.meat += getRandom(m);
-        }
-        if (rnd > 0.66) {
-            ml.vegetarian +=  getRandom(v);
-        }
-        if (rnd > 0.66) {
-            ml.drink += getRandom(dx);
-        }
+        for (f = 0; f < 5; f++) {
+            s = ["Beef", "Sausage", "Chicken", "Chorizo", "Pork", "Burger", "Lamb", "Turkey", "Dino small", "DINO XXL", "Fish", "Duck",  "Carcass", "Humans", "Mammoth"];
+            ml.meat += getRandom(rnd, s);
 
-        if (rnd > 0.85) {
-            ml.meat += getRandom(m);
-        }
-        if (rnd > 0.85) {
-            ml.vegetarian +=  getRandom(v);
-        }
-        if (rnd > 0.85) {
-            ml.drink += getRandom(dx);
-        }
+            s= ["Gras", "Grape", "pineapple", "Tomatoes", "fruits", "bananas", "trees", "apples", "grain", "leafs", "straw", "corn"];
+            ml.vegetarian += getRandom(rnd, s);
 
+            s = ["Water", "Wine", "Milk", "Beer", "Seawater", "Budweiser", "Sprite", "Orange Juice", "Murauer", "Warstein", "Coke", "Cola", "Fanta", "Ice Tea"];
+            ml.drink += getRandom(rnd, s);
+        }
+        
         ml.meat = ml.meat.slice(0, -1);
         ml.drink = ml.drink.slice(0, -1);
         ml.vegetarian = ml.vegetarian.slice(0, -1);
-        
-        p.meals = ml;
        
-        p.calory = 1000 + Math.floor(Math.random() * 5000);
+        dm.meals = ml;
+       
+        dm.calory = 1000 + Math.floor(Math.random() * 5000);
 
-        p.mealsPerDay = 1 + Math.floor(Math.random() * 5);
+        dm.mealsPerDay = 1 + Math.floor(Math.random() * 5);
 
-        return p;
+        return dm;
     }
-
-    function getRandom(template) {
+    function getRandom(rnd,template) {
+        if (Math.random()>rnd) return "";
         return template[Math.floor(Math.random() * template.length)] + ",";
     }
-
     function uniqueArray(source) {
         var i,
             n = {},

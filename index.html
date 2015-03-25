@@ -29,32 +29,23 @@
         &nbsp;
         <div class="checkbox">
             <label>
-                <input ng-model="sort" ng-init="sort=true" ng-change="query(term, index, sort, unique, output, reduce)" type="checkbox">&nbsp;Sort
+                <input ng-model="s.sort" ng-init="s.sort=true" ng-change="query(s)" type="checkbox">&nbsp;Sort
             </label>
             <label>
-                <input ng-model="unique" ng-init="unique=true" ng-change="query(term, index, sort, unique, output, reduce)" type="checkbox">&nbsp;Unique
+                <input ng-model="s.unique" ng-init="s.unique=true" ng-change="query(s)" type="checkbox">&nbsp;Unique
             </label>
             <label>
-                <input ng-model="reduce" ng-init="reduce=false" ng-change="query(term, index, sort, unique, output, reduce)" type="checkbox">&nbsp;Reduce
-            </label>
-            
+                <input ng-model="s.reduce" ng-init="s.reduce=false" ng-change="query(s)" type="checkbox">&nbsp;Reduce
+            </label>            
+            &nbsp;            
+            <select class="form-control" ng-init="s.output=selOutput[0]" ng-model="s.output" ng-change="query(s)" ng-options="o for o in selOutput"></select>
+            <select class="form-control" ng-init="s.index=selection[2]" ng-model="s.index" ng-change="query(s)" ng-options="idx.viewName for idx in selection"></select>
+            <input class="form-control" ng-model="s.term" ng-change="query(s)" ng-model-options="{ debounce: {'default': 500} }" type="text" placeholder="Search">        
         </div>
-        &nbsp;
-        <div class="form-group">
-            <select class="form-control" ng-init="output='V'" ng-model="output" ng-change="query(term, index, sort, unique, output, reduce)">
-              <option value="P">Property</option>
-              <option value="K">Key</option>
-              <option value="V">Value</option>
-              <option value="D">Document</option>
-              <option value="VIEW">View</option>
-            </select> 
-            <select class="form-control" ng-init="index=selection[2]" ng-model="index" ng-change="query(term, index, sort, unique, output, reduce)" ng-options="idx.viewName for idx in selection"></select>
-            <input id="search" class="form-control" ng-model="term" ng-change="query(term, index, sort, unique, output, reduce)" ng-model-options="{ debounce: {'default': 333} }" type="text" placeholder="Search">
-        </div>
+        
         &nbsp;
         <button class="btn" ng-class="{'btn-danger': !isIndexing(), 'btn-success': isIndexing()}" ng-click="toggleIDX()">Indexing</button>
         &nbsp;
-
         <button class="btn btn-success" ng-click="rebuildIDX()">Rebuild</button>
         <button class="btn btn-danger" ng-click="deleteIDX()">Delete</button>
         &nbsp;

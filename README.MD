@@ -3,32 +3,33 @@
 
 ### Why **Firebase IndexView**?
 
-Working with [Firebase](https://www.firebase.com/) like other Databases sorting and searching records is our main topic. But if have nested documents in JSON Notation it is not so easy to search for values in properties of a nested document. e.g. how to search for all drinks, meats and vegetarians 
+If you are building pure clientside applications [Firebase](https://www.firebase.com/) is the perfect backend to store data and host an application. IF you are working with Firebase like other Databases sorting and searching records is a main topic. IndexView brings you easy search capabilities, by automatically indexing your data in the background. There is no need do change your work. Especially if you have nested documents in JSON Notation it is easy to search for values in the properties of a nested document. e.g. search for all drinks, meats and vegetarians.
+
+I know there are a lot of discussions about 'flattening structures' out there, but if you have an fitting index, it is easy and fast to pull out `dinomeals` containing `Beer `.
 
 	dinomeals: { 
 	
 		key1: { 
 			meals: { 
-				drink: "Water, Milk" , 
-				meat: "Beef, Lamb",
-				vegetarian: "Grain, straw"  
+				drink: "Cola, Budweiser, Fanta" , 
+				meat: "Beef, Duck",
+				vegetarian: "straw"  
 			}		
 		},
 		
 		key2: { 
 			meals: { 
-				drink: "Beer" , 
-				meat: "Chicken",
-				vegetarian: "Fruits, Straw"  
+				drink: "Water, Beer", 
+				vegetarian: "Fruits, Apples"  
 			}		
 		},
 		...
 	}
 	
 
-I know there are a lot of discussions about 'flattening structures' out there, but if you have an fitting index, it is easy and fast to pull out `dinomeals` containing `Beer `.
 
-Despite [structuring](https://www.firebase.com/docs/web/guide/structuring-data.html) and [denormalizing](https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html) your data is the recommended way. Sometimes you need to make a deeper look-up in a stored document(JSON) in Firebase, because you have - coming up with some given data - to keep this structure. Flattening structure means also to maintain your 'denormalized' data at multiple positions in your database synchronized. If you don't want to integrate an external solution like ElasticSearch and you don't want to work with a mixed server- & client-side solution, then **IndexView** brings up an - easy to go - AngularJS solution. **IndexView** is a pure client-side solution and extends only the backend capabilities of Firebase. 
+
+Despite [structuring](https://www.firebase.com/docs/web/guide/structuring-data.html) and [denormalizing](https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html) your data is the recommended way. Sometimes you need to make a deeper look-up in a stored document(JSON) in Firebase, because you have - coming up with some given data - to keep this structure. Flattening structure means also to maintain your 'denormalized' data at multiple positions in your database synchronized. If you don't want to integrate an external solution like ElasticSearch and you don't want to work with a mixed server- & client-side solution, then **IndexView** brings up an - easy to go - AngularJS solution. **IndexView** is a pure client-side solution and extends only the backend capabilities of Firebase. Alternativ you can also use a Node.js application to keep your index in Firebase uptodate.
 
 **IndexView** will help you to index any documents (JSON notation) stored in Firebase and will search for each indexed - even nested - property. It is easy to go, define index-names and some view-mapping functions and **IndexView** will automatically hold your indexes and views uptodate. See here sample data in `dinomeal` node, each data-document with an unique key. 
 
@@ -36,7 +37,7 @@ Despite [structuring](https://www.firebase.com/docs/web/guide/structuring-data.h
 
 In difference to [Firebase's data index](https://www.firebase.com/docs/security/guide/indexing-data.html) **IndexView** can index and sort also a nested 'child of a child of a child...' . In this case you create an index of all items in each property of meals e.g. `Cola, Budweiser, Fanta, Beef, Duck, straw`.  **IndexView** uses a mapView function to transform your data into indexes e.g. to lowercase: if you have mixed upper- and lowercase entrys from a foreign readonly database, then - on the fly - all indexes could be transformed to lowercase. You know Firebase queries are case sensitiv. Or you can transform a date into a value that represents the number of milliseconds for doing some calculations. Any index mapping function is allowed, if the result is a valid index ( stored as [Firebase priority().](https://www.firebase.com/docs/web/api/firebase/setpriority.html)).
 
-Further IndexView provides the option to generate **mapped views** of your origin Firebase data-documents, which are stored as values. A view can return a simple 'true' but also extract a summary or make a calculation over values in your data-document. Next you see the index node `IDX-dinomeal` where you can find your indexes created from origin data in `dinomeal`. The priority is your index sorted and queryable. The value is here a - senseless - concatenated view but could also be a simple `true`.  
+Further IndexView provides the option to generate **mapped views** of your origin Firebase data-documents, which are stored as values. A view can return a simple `true` but also extract a summary or make a calculation over values in your data-document. Next you see the index node `IDX-dinomeal` where you can find your indexes created from origin data in `dinomeal`. The priority is your index sorted and queryable. The value here is a concatenated view but could also be a simple `true`.  
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_index.png)
 
@@ -66,7 +67,11 @@ This project is a simple and rapid prototyp to facilitate the opportunities of [
 
 Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebase's **[Dinosaurs](https://dinosaur-facts.firebaseio.com/)** database to join it with Database Dinomeals.
 
+See a simplified Demo in JS Fiddle **[https://jsfiddle.net/woko/6ddpLp17/14/](https://jsfiddle.net/woko/6ddpLp17/14/)**
+
 Explore this project at **[https://github.com/wotamann/Firebase-IndexView](https://github.com/wotamann/Firebase-IndexView)**
+
+
 
 ##Let's start
 
@@ -170,7 +175,7 @@ Every index-definition in IndexDeclaration array is an object with 2 properties:
 
 #####a) Simple Index 	
 
-'mapView' can be a function with 2 parameters `emit, doc`. 'emit' is a function, which does the work and generates an index. emit must be called with `index` and `value` to generate an index.
+`mapView` can be a function with 2 parameters `emit, doc`. 'emit' is a function, which does the work and generates an index. emit must be called with `index` and `value` to generate an index.
 
 > mapView:function (emit, doc) { ... emit(index,value) ... }	
 
@@ -188,7 +193,7 @@ Every index-definition in IndexDeclaration array is an object with 2 properties:
 	]
 
 
-Is 'mapView' an array then IndexView interprets the first item as function and all other items (2-n) in the array as parameters. The first parameter will always be the emit function, the second parameter is the document your are working on. 
+Is `mapView` an array then IndexView interprets the first item as function and all other items (2-n) in the array as parameters. The first parameter will always be the emit function, the second parameter is the document your are working on. 
 
 > mapView:[function(emit, doc, param1, param2) {...}, param1, param2, ...]	
 
@@ -206,7 +211,7 @@ Is 'mapView' an array then IndexView interprets the first item as function and a
 			}        
 		]
 
-If 'mapView' is undefined, then IndexView try `mapView=function(emit,doc) { emit(doc[viewName],true)}`
+If `mapView` is undefined, then IndexView try `mapView=function(emit,doc) { emit(doc[viewName],true)}`
 
 	var IndexDeclarationDinosaurs = 
 	[
@@ -216,7 +221,7 @@ If 'mapView' is undefined, then IndexView try `mapView=function(emit,doc) { emit
 		},
 	]
 
-and this will created this index 
+and this will create following index 
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_dino_order.png)
 
@@ -253,21 +258,21 @@ In `Dinomeal ` the stored objects must have a property `_linked` containing keys
 	[ ...
 		{   
             // 'meals/day'  let's indivual configurate your index tree if necessary            
-            indexName: 'meals/day',
+            viewName: 'meals/day',
 
-            mapIndex: function(doc) {return doc.mealsPerDay || null },
-
-            mapView: function(doc) { // doc = dinomeal object
+            mapView: function(emit, doc) { // doc = dinomeal object
 				
-				var dino=FirebaseIndexView_Dino.getLinkedDocument(doc); // dino = dinosaur object
+				var key=doc.mealsPerDay || null,
+				    
+					dino=FirebaseIndexView_Dino.getLinkedDocument(doc), // dino = dinosaur object
+					value=doc.mealsPerDay + " meals make a dino weight of " + (dino ? dino.weight : null);
 
-				return doc.mealsPerDay + " meals per day with "+doc.calory + 
-					" calories/meal make a dino weight of " + (dino ? dino .weight : null);
+				emit(key, value);
 			}
 		},
 	... ];
 
-This index produces this Firebase structure:
+This index produces the following Firebase structure:
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/index_meals_day.png)
 
@@ -280,41 +285,39 @@ Firebase structure of **'dinomeal'** Data DB from which you construct the index.
 
 Now make a declaration for a **'dinomeal' Index** joining all meals in one index:
 
-	// helper functions
-	function mapIndexMeal(doc, kind) { 
-		if (doc.meals){ return doc.meals[kind] ? doc.meals[kind].toLowerCase() : null } 
-	};
-	
-	function mapViewMeal(doc, kind, action) { 
-			return doc.meals ? 
-			( doc.meals[kind] ? ( (doc._linked + " " + action + " " + doc.meals[kind]) || 'no '+ kind) : null )
-			: null 
-	}
-   
-	var indexdeclaration=
-	[ 
-		{   
-            indexName: 'meals',   // use 3x the same indexName
+	// mapping and emiting function
+    function makeMeals(emit, doc) {
+        
+        var e,
+            meal = doc.meals || {};
+        
+        for (e in meal) {  // iterate over all meals  drink, food, meat...
+            var n = meal[e];
             
-			mapIndex: [mapIndexMeal,'drink'],
-			
-            mapView: [mapViewMeal,'drink','take liquid only']
-        },
-        {   
-            indexName: 'meals',   // use 3x the same indexName
+            if(!n) continue;
             
-			mapIndex: [mapIndexMeal,'meat'],
-            
-			mapView: [mapViewMeal,'meat', 'eats like a raptor']
-        },
-        {   
-            indexName: 'meals',   // use 3x the same indexName
-            
-			mapIndex: [mapIndexMeal,'vegetarian'],
-            
-			mapView: [mapViewMeal,'vegetarian','champs loud the']
-        }        
-	];
+            n = n ? n.toLowerCase() : null;
+            // iterate and generate an index for each split word in every meal like water, milk, ... in drink 
+            n.split(",").forEach(
+                function (key) {
+
+                    key = key.trim() + "-" + e;
+
+                    // emit calculated key and value to build the index
+                    emit(key, meal);
+
+                }
+            );
+        }
+    }  
+       
+    var indexDeclarationDinomeals = [
+        
+        {
+            viewName: 'meals',
+            mapView: makeMeals
+        }
+	]
 
 Firebase structure of `IDX-dinomeal` Index DB. Take a look at the branch `meals`. Here you get a joined index containing all three kinds of meals. The view content here stays just for demonstration and could also be a simple `true`. It is now easy to search for all three kinds of meals with one query.
 
@@ -411,11 +414,11 @@ and every change (add, update, remove) in your data-reference will automatically
 ### Step 7) Try searching:
 
 
-All query methods are related to Firebase but return a promise. 
+All query methods are related to Firebase query methods but return a promise. 
 
-> FirebaseIndexView.queryFromTo(index, from, [to], [sort], [showView], [queryResultArray] )
+> FirebaseIndexView.queryFromTo(search, [queryResultArray] )
 > 
-> .then( function(result){ ... } )
+> .then( function(result){ use result } )
 
 IMPORTANT NOTE: This project uses ECMAScript 6 native promises - IMHO - current only available in Chrome or Firefox. For using other browsers you have to polyfill or install a promise library ([AngularJS $q](https://docs.angularjs.org/api/ng/service/$q) or  [kriskowal](https://github.com/kriskowal/q))
 
@@ -494,18 +497,16 @@ IF you want to extend your first query, then you can pass the first searching re
     // define Index and View in Indexdeclaration Array 
     var indexDeclaration = [
         {
-            
-            indexName: 'dino_living_timespan',
-            
-            mapIndex: function (doc) {
-                return (doc.appeared && doc.vanished) ? (doc.vanished - doc.appeared) : null;
-            },
-            
-            mapView: function (doc) {
-                return (doc.appeared && doc.vanished) ? doc._key + ' lives ' + 
-				(doc.vanished - doc.appeared) + ' years.' : "no timespan";
-            }
-        },
+			// no mapView declared, but viewName matches a property of document            
+	    	viewName: 'order',
+			
+			mapView: function(emit, doc){ 
+				var idx= doc.order ? doc.order : null;
+				
+				emit(idx,true)  // generates index with view 'true'
+			},	
+	
+		}
     ];
 
     // locate reference to Dinosaur Facts Database 
@@ -520,10 +521,23 @@ IF you want to extend your first query, then you can pass the first searching re
     // If you start with a empty database use  .indexOn()
     // FirebaseIdx.indexOn();
     
-	// If you - like here - start with an existing database use .indexRebuild()
+	// If you - like here - start with an existing database use once method: indexRebuild()
     FirebaseIdx.indexRebuild();
 	
-    FirebaseIdx.queryFromTo('dino_living_timespan', 1500000, 6000000, true, true)
+
+		/* 
+		search={
+            index:'meals',
+            startAt:'A',
+            endAt:'zz',
+            sort:true,
+            unique:true,
+            output:'D',
+            [reduceFn:function(previousValue, currentValue, index, array){ ...... }]
+        }
+		*/
+
+    FirebaseIdx.queryFromTo(search)
         .then(function (result) {
             console.log(result);
     })
@@ -549,7 +563,7 @@ IF you want to extend your first query, then you can pass the first searching re
 
 -
 
-> 
+
 > IMPORTANT NOTE: This project uses - to keep it simple - native promises in ECMAScript 6 current only available in Chrome or Firefox. For using other Browsers you have to polyfill or install a promise library ([AngularJS $q](https://docs.angularjs.org/api/ng/service/$q) or  [kriskowal](https://github.com/kriskowal/q)) instead. 
 > 
      

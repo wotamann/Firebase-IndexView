@@ -458,7 +458,10 @@
                     return new Promise(function (resolve, reject) {
                         refQuery.once('value', function (dataSnapshot) {
 
-                            switch (output) {
+                            // prepare output value
+                            var o= isString(output) ? output.toUpperCase().substr(0,1) : "-"
+                            
+                            switch (o) {
 
                             case 'P':  // output only key
                                 resolve(queryProperty(dataSnapshot, sort, unique, queryResultArray, ReduceFN));
@@ -478,7 +481,7 @@
 
                             }
                        
-                            console.timeEnd("Query");
+                            //console.timeEnd("Query");
 
                         }, function (errorObject) {
                             reject(errorObject);
@@ -494,7 +497,7 @@
                     return indexing;
                 };
                 
-                // Start / Stop automatic indexing
+                // Start / Stop indexing
                 self.indexOn = function (rebuild) {
 
                     if (indexing === true || !referenceIndex || !reference) {
@@ -572,97 +575,112 @@
                 };
 
                 // Methods to query (all query functions return a Promise) ------------------------------------    
-
                 /*
-                *   queryFromTo(index, startAt, endAt, sort, view, [queryResultArray])
+                *   queryFromTo(search, [queryResultArray])
                 *   
-                *   @param index:
-                *   could be any index item from indexDeclaration array ie. 'indexDeclaration(0)'  or a string matching viewName in any index item               
+                *   @param1: search object:
+                *   @param2: [queryResultArray]
+                *   return: Promise
+                                
+                *   @param1: search 
+                *       search.index:
+                *       could be any index item from indexDeclaration array ie. 'indexDeclaration(0)'  or a string matching viewName in any index item               
                 *
-                *   @param startAt:
-                *   search term from 
+                *       search.startAt:
+                *       search term from 
                 *
-                *   @param endAt:
-                *   search term to
+                *       search.endAt:
+                *       search term to
                 *
-                *   @param sort:
-                *   boolean true delivers a up-sorted array 
+                *       search.sort:
+                *       boolean true delivers a up-sorted array 
                 *
-                *   @param unique:
-                *   boolean true delivers an array without double keys   
+                *       search.unique:
+                *       boolean true delivers an array with unique keys (eliminates doubles)   
                 *
-                *   @param output:
-                *   'P'  delivers a queryResultArray filled with properties
-                *   [ property1, property2, ... ]
-                
-                *   'K'  delivers a queryResultArray filled with keys
-                *   [ key1, key2, ... ]
-                
-                *   'V'  delivers a queryResultArray filled with values
-                *   [ value1, value2, ... ]
-                
-                *   'D'  delivers a queryResultArray filled with origin documents (JSON)
-                *   [ ... {  property:'...', key:'...', value: JSON-document } ... ]
-                
-                *   '' any other string delivers a queryResultArray filled with index views (JSON)
-                *   [ ... { property:'...', key:'...', value: JSON-VIEW Object } ... ]
+                *       search.output:
+                *       'P'  delivers a queryResultArray filled with properties
+                *       [ property1, property2, ... ]
+                *
+                *       'K'  delivers a queryResultArray filled with keys
+                *       [ key1, key2, ... ]
+                *
+                *       'V'  delivers a queryResultArray filled with values
+                *       [ value1, value2, ... ]
+                *
+                *       'D'  delivers a queryResultArray filled with origin documents (JSON)
+                *       [ ... {  property:'...', key:'...', value: JSON-document } ... ]
+                *
+                *       'XXX' any other string delivers a queryResultArray filled with index views (JSON)
+                *       [ ... { property:'...', key:'...', value: JSON-VIEW Object } ... ]
+                   
+                *   @param2 [queryResultArray]
+                *       queryResultArray is optional. If undefined generate new queryResult,
+                *       otherwise extend the existing queryResultArray with the new result.
                 *   
-                *   @param [queryResultArray]
-                *   queryResultArray is optional. If undefined generate new queryResult,
-                *   otherwise extend the existing queryResultArray with the new result.
-                *   
-                *   @example query chaining with promise:
-                    FirebaseIdx.queryFromTo(index1, termFrom1, termTo1, sort, unique, output)        
+                
+                    @example query chaining with promise:
+                
+                    FirebaseIdx.queryFromTo(search1)        
                     .then( function(result1)
                     {            
-                        return FirebaseIdx.queryFromTo(index2, termFrom2, termTo2, sort, unique, output, result1)  // here pass in result1   
+                        return FirebaseIdx.queryFromTo(search2, result1)  // here pass in result1   
                     })        
                     .then( function(result2){
                         // ... use result2 ...
                     });
-                *
+                
+                
+                SAMPLE of SEARCH Object
+                -----------------------
+                search={
+                    index:'meals',
+                    startAt:'A',
+                    endAt:'zz',
+                    sort:true,
+                    unique:true,
+                    output:'D',
+                    reduceFn:function(previousValue, currentValue, index, array){ ...... }
+                }
                 */
-                self.queryFromTo = function (index, startAt, endAt, sort, unique, output, queryResultArray, ReduceFn) {
-
-                    index = checkIndex(index);
-
-                    // if endAt undefined then find all startAt
-                    endAt = endAt || startAt;
-
-                    var queryRef = referenceIndex.child(index).startAt(startAt).endAt(endAt);
-
-                    return queryDo(reference, queryRef, sort, unique, output, queryResultArray, ReduceFn); // // return Promise
-
-                };
-
-                self.queryStartAt = function (index, startAt, limit, sort, unique, output, queryResultArray, ReduceFn) {
-
-                    index = checkIndex(index);
-                    limit = limit || 1;
-                    var queryRef = referenceIndex.child(index).startAt(startAt).limitToFirst(limit);
-
-                    return queryDo(reference, queryRef, sort, unique, output, queryResultArray, ReduceFn); // // return Promise
-
-                };
-
-                self.queryEndAt = function (index, endAt, limit, sort, unique, output, queryResultArray, ReduceFn) {
-
-                    index = checkIndex(index);
-                    limit = limit || 1;
-                    var queryRef = referenceIndex.child(index).endAt(endAt).limitToLast(limit);
-
-                    return queryDo(reference, queryRef, sort, unique, output, queryResultArray, ReduceFn); // return Promise
-
-                };
-
-                self.queryFirst = function (index, startAt, output, queryResultArray) {
-                    return self.queryStartAt(index, startAt, 1, true, true, output, queryResultArray); // return Promise
-                };
-
-                self.queryLast = function (index, endAt, output, queryResultArray) {
-                    return self.queryEndAt(index, endAt, 1, true, true, output, queryResultArray); // return Promise
-                };
                
+                self.queryFromTo = function (search, queryResultArray) {
+                    
+                    // if endAt undefined then find all startAt
+                    search.endAt = search.endAt || search.startAt;
+
+                    var queryRef = referenceIndex.child(checkIndex(search.index)).startAt(search.startAt).endAt(search.endAt);
+
+                    return queryDo(reference, queryRef, search.sort, search.unique, search.output, queryResultArray, search.reduceFn); // // return Promise
+
+                };
+
+                self.queryStartAt = function (search, queryResultArray) {
+
+                    search.limit = search.limit || 1;
+                    var queryRef = referenceIndex.child(checkIndex(search.index)).startAt(search.startAt).limitToFirst(search.limit);
+
+                    return queryDo(reference, queryRef, search.sort, search.unique, search.output, queryResultArray, search.reduceFn); // // return Promise
+
+                };
+
+                self.queryEndAt = function (search, queryResultArray) {
+
+                    search.limit = search.limit || 1;
+                    var queryRef = referenceIndex.child(checkIndex(search.index)).endAt(search.endAt).limitToLast(search.limit);
+
+                    return queryDo(reference, queryRef, search.sort, search.unique, search.output, queryResultArray, search.reduceFn); // return Promise
+
+                };
+
+                self.queryFirst = function (search, queryResultArray) {
+                    return self.queryStartAt(search, queryResultArray); // return Promise
+                };
+
+                self.queryLast = function (search, queryResultArray) {
+                    return self.queryEndAt(search, queryResultArray); // return Promise
+                };
+                           
                 /* 
                 
                 Get an linked object from your record with a property 'record._linked=keyOfLinkedObject'
