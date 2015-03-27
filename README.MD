@@ -565,5 +565,10 @@ IF you want to extend your first query, then you can pass the first searching re
 
 
 > IMPORTANT NOTE: This project uses - to keep it simple - native promises in ECMAScript 6 current only available in Chrome or Firefox. For using other Browsers you have to polyfill or install a promise library ([AngularJS $q](https://docs.angularjs.org/api/ng/service/$q) or  [kriskowal](https://github.com/kriskowal/q)) instead. 
-> 
+
+Copyright (c) 2013-2014: wotamann
+
+[https://github.com/wotamann](https://github.com/wotamann/Firebase-IndexView)
+
+
      
