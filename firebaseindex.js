@@ -6,27 +6,11 @@
      @license MIT
  */
 
-(function () {
-    'use strict';
+var module= module || {};
+var exports=module.exports={};
 
-    // define FirebaseIndexView  module 
-    var indexview = angular.module('FirebaseIndexView', []);
 
-    /*
-        The `FirebaseIndexView` service is an object which comes with 4 Methods for creating and maintaining Indexes of stored documents (JSON Objects)
-        
-        'indexOn', 'indexOff', 'indexDelete', 'indexRebuild'  
-
-        Methods to query your documents using your indexes. The Result delivers an Array with your Index Views or with your stored documents. 
-        All this methods return a promise and are chainable:
-       
-        'queryFromTo', 'queryStartAt', 'queryEndAt', 'queryFirst' and 'queryLast'    
-
-    */
-    
-    indexview.factory('FirebaseIndexView', [
-
-        function () {
+function firebaseIndexView() {
 
             /*
             *   call `FirebaseIndexView` service with or without 'new' 
@@ -450,7 +434,7 @@
                 
                 function queryDo(refData, refQuery, sort, unique, output, queryResultArray, ReduceFN) {
 
-                    console.time("Query");
+                    // console.time("Query");
                     
                     queryResultArray = queryResultArray || [];
                     queryResultUniqe = (queryResultArray.length !== 0) ? queryResultUniqe : {};
@@ -507,7 +491,7 @@
                     // set on for data from lastdata beginning
                     refChildBuild = reference.on('child_added', function (snapshot) {
                         if (firstRun === false || rebuild === true) {
-                            indexHandle(snapshot);
+                            indexHandle(snapshot);                            
                         }
                     });
                     if (firstRun === true) {
@@ -517,6 +501,7 @@
                     }
 
                     refChildChanged = reference.on('child_changed', function (snapshot, oldsnapshot) {
+                        console.log("'child_changed",snapshot)
                         indexHandle(snapshot, false);
                     });
 
@@ -745,6 +730,35 @@
 
             };
 
-        }]);
+}
+
+exports.firebaseIndexView = firebaseIndexView();
+
+
+(function () {
+    'use strict';
+
+    if (typeof angular === 'undefined' ) return;
+    
+    // define FirebaseIndexView  module 
+    var indexview = angular.module('FirebaseIndexView', []);
+
+    /*
+        The `FirebaseIndexView` service is an object which comes with 4 Methods for creating and maintaining Indexes of stored documents (JSON Objects)
+        
+        'indexOn', 'indexOff', 'indexDelete', 'indexRebuild'  
+
+        Methods to query your documents using your indexes. The Result delivers an Array with your Index Views or with your stored documents. 
+        All this methods return a promise and are chainable:
+       
+        'queryFromTo', 'queryStartAt', 'queryEndAt', 'queryFirst' and 'queryLast'    
+
+    */
+    
+    indexview.factory('FirebaseIndexView', [
+
+       firebaseIndexView
+        
+    ]);
 
 }());
