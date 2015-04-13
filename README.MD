@@ -69,8 +69,6 @@ This project is a simple and rapid prototyp to facilitate the opportunities of [
 
 Check out the **[Demo](https://fireindex.firebaseapp.com)** partly using Firebase's **[Dinosaurs](https://dinosaur-facts.firebaseio.com/)** database to join it with Database Dinomeals.
 
-See a simplified Demo in JS Fiddle **[https://jsfiddle.net/woko/6ddpLp17/14/](https://jsfiddle.net/woko/6ddpLp17/14/)**
-
 Explore this project at **[https://github.com/wotamann/Firebase-IndexView](https://github.com/wotamann/Firebase-IndexView)**
 
 
