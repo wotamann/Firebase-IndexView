@@ -12,8 +12,7 @@ var app = angular.module('IndexView_Demo', ['FirebaseIndexView']);
 // use Service 'firebaseIndexView' from Modul 'firebaseIndexView' 
 app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function ($scope, FirebaseIndexView, $timeout) {
     'use strict';
-    
-    
+        
     //--- FirebaseIndexView DINOSAUR  --------------------------------------------------------------------------------------------------------
     
     var indexDeclarationDinosaur = [
@@ -220,7 +219,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     $scope.addMeals = function () {
 
         var i,
-            l = 1,
+            l = 100,
             dinoMeal;
 
         for (i = 0; i < l; i += 1) {

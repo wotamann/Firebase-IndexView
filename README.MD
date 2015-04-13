@@ -53,6 +53,10 @@ The **IndexView Object** exposes methods to manage indexing with a simple `Index
 > IMPORTANT NOTE: Is your Index damaged, corrupted or lost, then rebuild the index with `.indexRebuild()`. 
 > Warning: If you have large data sets, this procedure is expensive because it re-indexes all available data. 
 
+###NodeJS Modul
+
+**IndexView** comes as an NodeJS modul. Modify `nodeFirebase.js` with your references to your Firebase data and define all Indexes and Views  you want to generate in the IndexDeclaration array. Start your indexserver `node nodeFirebase.js` and everthing is done. 
+
 ###AngularJS Service
 
 **IndexView** comes as an AngularJS modul which works perfectly pure clientside. It supports the Firebase backend service strategy and does not need serverside pre-requirements. 
