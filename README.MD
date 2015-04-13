@@ -3,7 +3,7 @@
 
 ### Why **Firebase IndexView**?
 
-If you are building pure clientside applications [Firebase](https://www.firebase.com/) is the perfect backend to store data and host an application. IF you are working with Firebase like other Databases sorting and searching records is a main topic. IndexView brings you easy search capabilities, by automatically indexing your data in the background. There is no need do change your work. Especially if you have nested documents in JSON Notation it is easy to search for values in the properties of a nested document. e.g. search for all drinks, meats and vegetarians.
+If you are building pure clientside applications [Firebase](https://www.firebase.com/) is the perfect backend to store data and host an application. If you are working with Firebase like other Databases sorting and searching records is a main topic. IndexView brings you easy search capabilities, by automatically indexing your data in the background. There is no need do change your work. Especially if you have nested documents in JSON Notation it is easy to search for values in the properties of a nested document. e.g. search for all drinks, meats and vegetarians.
 
 I know there are a lot of discussions about 'flattening structures' out there, but if you have an fitting index, it is easy and fast to pull out `dinomeals` containing `Beer `.
 
@@ -29,7 +29,7 @@ I know there are a lot of discussions about 'flattening structures' out there, b
 
 Despite [structuring](https://www.firebase.com/docs/web/guide/structuring-data.html) and [denormalizing](https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html) your data is the recommended way. Sometimes you need to make a deeper look-up in a stored document(JSON) in Firebase, because you have - coming up with some given data - to keep this structure. Flattening structure means also to maintain your 'denormalized' data at multiple positions in your database synchronized. If you don't want to integrate an external solution like ElasticSearch and you don't want to work with a mixed server- & client-side solution, then **IndexView** brings up an - easy to go - AngularJS solution. **IndexView** is a pure client-side solution and extends only the backend capabilities of Firebase. Alternativ you can also use a Node.js to build an index-server to keep your index in Firebase uptodate.
 
-**IndexView** will help you to index any documents (JSON notation) stored in Firebase and will search for each indexed - even nested - property. It is easy to go, define index-names and some view-mapping functions and **IndexView** will automatically hold your indexes and views uptodate. See here sample data in `dinomeal` node, each data-document with an unique key. 
+**IndexView** will help you to index any documents (JSON notation) stored in Firebase and will search for each indexed - even nested - property. It is easy to go, define index-names and some view-mapping functions and **IndexView** will automatically hold your indexes and views uptodate. See here sample data in `dinomeals` node, one data-document with the unique key `-JI0TTNQApXLLP4fO1zPm`. 
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_data.png)
 
@@ -39,7 +39,7 @@ Further IndexView provides the option to generate **mapped views** of your origi
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_index.png)
 
-**IndexView** is easy to use - if once activated - it maintain automatically indexes and views of your referenced Firebase DB. It watches your data and **updates your index and views dynamically**, as data is added,changing or removed. But edit and manipulate data only in your data-reference `dinomeal` and **never** in your index-reference `IDX-dinomeal`. Data in index-reference will be maintained by IndexView.
+**IndexView** is easy to use - if once activated - it maintains automatically indexes and views of your referenced Firebase DB. It watches your data and **updates your index and views dynamically**, as data is added,changing or removed. But edit and manipulate data only in your data-reference `dinomeal` and **never** in your index-reference `IDX-dinomeal`. Data in index-reference will be maintained by IndexView.
 
 ![Data Structure](https://fireindex.firebaseapp.com/img/structure_index_changed.png)
 
@@ -228,7 +228,7 @@ and this will create following index
 
 #####c) Conditional Index
 
-Conditional Index declaration for 'Dinosaur' database, creates an index only if condition **doc.order==='ornithischia'** is true:
+Conditional Index declaration for 'Dinosaur' database, creates an index only if condition `doc.order==='ornithischia'` is true:
 
 	[ 
 		{
@@ -264,7 +264,7 @@ In `Dinomeal ` the stored objects must have a property `_linked` containing keys
 				
 				var key=doc.mealsPerDay || null,
 				    
-					dino=FirebaseIndexView_Dino.getLinkedDocument(doc), // dino = dinosaur object
+					dino=FirebaseIndexView_Dino.getLinkedDocument(doc._linked), // dino = dinosaur object
 					value=doc.mealsPerDay + " meals make a dino weight of " + (dino ? dino.weight : null);
 
 				emit(key, value);
@@ -546,7 +546,6 @@ IF you want to extend your first query, then you can pass the first searching re
 
 ---
 
--
 
 > TIP: Install Firebase extension 'Vulcan', open Chrome Dev-Tools and observe Firebase data, indexes and views.
 
@@ -566,7 +565,10 @@ IF you want to extend your first query, then you can pass the first searching re
 
 > IMPORTANT NOTE: This project uses - to keep it simple - native promises in ECMAScript 6 current only available in Chrome or Firefox. For using other Browsers you have to polyfill or install a promise library ([AngularJS $q](https://docs.angularjs.org/api/ng/service/$q) or  [kriskowal](https://github.com/kriskowal/q)) instead. 
 
-Copyright (c) 2013-2014: wotamann
+-
+
+> IMPORTANT NOTE: This Work is only for demonstrating some features of Firebase and not for use in productive systems. 
+
 
 [https://github.com/wotamann](https://github.com/wotamann/Firebase-IndexView)
 

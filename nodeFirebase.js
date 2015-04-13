@@ -1,4 +1,11 @@
-var Firebase = require("firebase");
+/*
+     Firebase IndexView
+     @version 0.1.0
+     @autor wotamann 2015
+     @license MIT
+ */
+
+ var Firebase = require("firebase");
 var fbindex=require("firebaseindex");
 var FirebaseIndexView=fbindex.firebaseIndexView;
 

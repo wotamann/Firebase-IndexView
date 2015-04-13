@@ -2,7 +2,7 @@
 /*
      Firebase IndexView
      @version 0.1.0
-     (c) 2015 wotamann
+     @autor wotamann 2015
      @license MIT
  */
 
