@@ -219,7 +219,7 @@ app.controller('appCtrl', ['$scope', 'FirebaseIndexView', '$timeout', function (
     $scope.addMeals = function () {
 
         var i,
-            l = 100,
+            l = 1,
             dinoMeal;
 
         for (i = 0; i < l; i += 1) {
